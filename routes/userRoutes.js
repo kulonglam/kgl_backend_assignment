@@ -2,6 +2,8 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const auth = require("../middleware/authMiddleware");
+const role = require("../middleware/roleMiddleware");
 
 const router = express.Router();
 
@@ -40,14 +42,14 @@ const router = express.Router();
  *                 format: password
  *               role:
  *                 type: string
- *                 enum: [manager, sales agent]
+ *                 enum: [manager, SalesAgent]
  *     responses:
  *       "201":
  *         description: User created successfully
  *       "400":
  *         description: Bad request
  */
-router.post("/", async (req, res) => {
+router.post("/", auth, role("manager"), async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
@@ -106,11 +108,8 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-
     if (!user) return res.status(401).json({ message: "User not found" });
-
     const valid = await bcrypt.compare(password, user.password);
-
     if (!valid) return res.status(401).json({ message: "Invalid credentials" });
 
     const token = jwt.sign({ id: user._id, role: user.role },process.env.JWT_SECRET);

@@ -3,6 +3,7 @@ const router = express.Router();
 const { body, validationResult } = require("express-validator");
 const Sale = require("../models/Sale");
 const auth = require("../middleware/authMiddleware");
+const role = require("../middleware/roleMiddleware");
 
 /**
  * @swagger
@@ -56,10 +57,10 @@ const auth = require("../middleware/authMiddleware");
  *       400:
  *         description: Validation error
  */
-router.post("/cash", auth,
+router.post("/cash", auth, role("SalesAgent"),
   [
     body("produceName").isAlphanumeric().withMessage("Produce Name must be alpha-numeric"),
-    body("tonnage").isNumeric().withMessage("Tonnage must be a number"),
+    body("tonnage").isNumeric().withMessage("Tonnage must be a number").isInt({ min: 100 }).withMessage("Tonnage must be at least 100"),
     body("amountPaid").isNumeric().withMessage("Amount Paid must be a number").isInt({ min: 10000 }).withMessage("Amount Paid must be at least 10000"),
     body("buyerName").isAlphanumeric().withMessage("Buyer Name must be alpha-numeric").isLength({ min: 2 }).withMessage("Buyer Name must be at least 2 characters"),
     body("salesAgentName").isAlphanumeric().withMessage("Sales Agent Name must be alpha-numeric").isLength({ min: 2 }).withMessage("Sales Agent Name must be at least 2 characters"),
@@ -148,18 +149,18 @@ router.post("/cash", auth,
  *       400:
  *         description: Validation error
  */
-router.post("/credit", auth,
+router.post("/credit", auth, role("SalesAgent"),
   [
-    body("buyerName").isAlphanumeric().withMessage("Buyer Name must be alpha-numeric").isLength({ min: 2 }).withMessage("Buyer Name must be at least 2 characters"),
+    body("buyerName").matches(/^[a-zA-Z0-9\s]+$/).withMessage("Buyer Name must be alpha-numeric").isLength({ min: 2 }).withMessage("Buyer Name must be at least 2 characters"),
     body("nin").isAlphanumeric().withMessage("NIN must be alpha-numeric").isLength({ min: 13 }).withMessage("NIN must be at least 13 characters"),
-    body("location").isAlphanumeric().withMessage("Location must be alpha-numeric").isLength({ min: 2 }).withMessage("Location must be at least 2 characters"),
+    body("location").matches(/^[a-zA-Z0-9\s]+$/).withMessage("Location must be alpha-numeric").isLength({ min: 2 }).withMessage("Location must be at least 2 characters"),
     body("contact").isMobilePhone('any').withMessage("Contact must be a valid phone number"),
     body("amountDue").isNumeric().withMessage("Amount Due must be a number").isInt({ min: 10000 }).withMessage("Amount Due must be at least 10000"),
-    body("salesAgentName").isAlphanumeric().withMessage("Sales Agent Name must be alpha-numeric").isLength({ min: 2 }).withMessage("Sales Agent Name must be at least 2 characters"),
+    body("salesAgentName").matches(/^[a-zA-Z0-9\s]+$/).withMessage("Sales Agent Name must be alpha-numeric").isLength({ min: 2 }).withMessage("Sales Agent Name must be at least 2 characters"),
     body("dueDate").notEmpty().withMessage("Due Date cannot be empty"),
     body("produceName").isAlphanumeric().withMessage("Produce Name must be alpha-numeric"),
     body("produceType").isAlpha().withMessage("Produce Type must be alphabetic characters only").isLength({ min: 2 }).withMessage("Produce Type must be at least 2 characters"),
-    body("tonnage").isNumeric().withMessage("Tonnage must be a number"),
+    body("tonnage").isNumeric().withMessage("Tonnage must be a number").isInt({ min: 100 }).withMessage("Tonnage must be at least 100"),
     body("dispatchDate").notEmpty().withMessage("Dispatch Date cannot be empty")
   ],
   async (req, res) => {

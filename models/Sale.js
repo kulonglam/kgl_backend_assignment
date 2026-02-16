@@ -10,13 +10,13 @@ const saleSchema = new mongoose.Schema({
   produceName: { 
     type: String, 
     required: true,
-    match: [/^[a-zA-Z0-9]+$/, 'Produce Name must be alpha-numeric']
+    match: [/^[a-zA-Z0-9\s]+$/, 'Produce Name must be alpha-numeric']
   },
   produceType: { 
     type: String, 
     required: function() { return this.type === 'Credit'; },
     minlength: [2, 'Produce Type must be at least 2 characters'],
-    match: [/^[a-zA-Z]+$/, 'Produce Type must be alphabetic characters only']
+    match: [/^[a-zA-Z0-9\s]+$/, 'Produce Type must be alphabetic characters only']
   },
   tonnage: { type: Number, required: true },
   amountPaid: { 
@@ -34,19 +34,19 @@ const saleSchema = new mongoose.Schema({
     type: String, 
     required: true,
     minlength: [2, 'Buyer Name must be at least 2 characters'],
-    match: [/^[a-zA-Z0-9]+$/, 'Buyer Name must be alpha-numeric']
+    match: [/^[a-zA-Z0-9\s]+$/, 'Buyer Name must be alpha-numeric']
   },
   nin: { 
     type: String,
     required: function() { return this.type === 'Credit'; },
-    match: [/^[a-zA-Z0-9]+$/, 'NIN must be valid format'],
-    minlength: [13, 'NIN must be at least 13 characters']
+    match: [/^[A-Z0-9]{13,14}$/, 'NIN must be valid format'],
+    minlength: [14, 'NIN must be at least 14 characters']
   },
   location: { 
     type: String,
     required: function() { return this.type === 'Credit'; },
     minlength: [2, 'Location must be at least 2 characters'],
-    match: [/^[a-zA-Z0-9]+$/, 'Location must be alpha-numeric']
+    match: [/^[a-zA-Z0-9\s]+$/, 'Location must be alpha-numeric']
   },
   contact: { 
     type: String,
@@ -58,7 +58,7 @@ const saleSchema = new mongoose.Schema({
     type: String, 
     required: true,
     minlength: [2, 'Sales Agent Name must be at least 2 characters'],
-    match: [/^[a-zA-Z0-9]+$/, 'Sales Agent Name must be alpha-numeric']
+    match: [/^[a-zA-Z0-9\s]+$/, 'Sales Agent Name must be alpha-numeric']
   },
   dueDate: { type: Date, required: function() { return this.type === 'Credit'; } },
   dispatchDate: { type: Date, required: function() { return this.type === 'Credit'; } },

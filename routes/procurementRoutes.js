@@ -76,16 +76,17 @@ router.post(
   auth,
   role("manager"),
   [
-    body("produceName").isAlphanumeric().withMessage("Name of produce must be alpha-numeric"),
-    body("produceType").isAlpha().withMessage("Type of produce must be alphabetic characters only").isLength({ min: 2 }).withMessage("Type of produce must be at least 2 characters"),
-    body("date").notEmpty().withMessage("Date cannot be empty"),
+    body("produceName").matches(/^[a-zA-Z0-9\s]+$/).withMessage("Name of produce must be alpha-numeric"),
+    body("produceType").matches(/^[A-Za-z\s]+$/).withMessage("Type of produce must be alphabetic characters only").isLength({ min: 2 }).withMessage("Type of produce must be at least 2 characters"),
+    body("date").isISO8601().withMessage("Date cannot be empty"),
     body("time").notEmpty().withMessage("Time cannot be empty"),
     body("tonnage").isNumeric().withMessage("Tonnage must be a number").isInt({ min: 100 }).withMessage("Tonnage must be at least 100"),
     body("cost").isNumeric().withMessage("Cost must be a number").isInt({ min: 10000 }).withMessage("Cost must be at least 10000"),
-    body("dealerName").isAlphanumeric().withMessage("Dealer Name must be alpha-numeric").isLength({ min: 2 }).withMessage("Dealer Name must be at least 2 characters"),
+    body("dealerName").matches(/^[a-zA-Z0-9\s]+$/).withMessage("Dealer Name must be alpha-numeric").isLength({ min: 2 }).withMessage("Dealer Name must be at least 2 characters"),
     body("branch").isIn(["Maganjo", "Matugga"]).withMessage("Branch must be either Maganjo or Matugga"),
     body("contact").isMobilePhone('any').withMessage("Contact must be a valid phone number"),
     body("sellingPrice").isNumeric().withMessage("Selling Price must be a number")
+  .isInt({ min: 10000 }).withMessage("Selling Price must be at least 10000")
   ],
   async (req, res) => {
     const errors = validationResult(req);
